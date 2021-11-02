@@ -78,6 +78,6 @@ jobs:
             path: node_modules
             key: node_modules-${{ hashFiles('**/package-lock.json') }}
             
-        - name: test
-          run:
-            npm run test
+        - name: Run unit tests
+          run: |
+            npm run test -- --colors
