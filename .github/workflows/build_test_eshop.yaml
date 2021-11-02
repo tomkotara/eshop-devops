@@ -50,10 +50,10 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('**/package-lock.json') }}
           
-    - name: build
-      run: |
-        npm rebuild node-sass --force
-        npm run build -- --colors
+      - name: build
+        run: |
+          npm rebuild node-sass --force
+          npm run build -- --colors
 
         
 
@@ -78,6 +78,6 @@ jobs:
             path: node_modules
             key: node_modules-${{ hashFiles('**/package-lock.json') }}
             
-      -name: test
-        run:
-          npm run test
+        - name: test
+          run:
+            npm run test
