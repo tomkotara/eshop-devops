@@ -35,8 +35,8 @@ jobs:
 
     steps: 
       - name: Git Checkout
-          uses: actions/checkout@v2.4.0
-          with:
+        uses: actions/checkout@v2.4.0
+        with:
             token:  ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Setup Node
@@ -63,8 +63,8 @@ jobs:
 
       steps: 
         - name: Git Checkout
-            uses: actions/checkout@v2.4.0
-            with:
+          uses: actions/checkout@v2.4.0
+          with:
               token:  ${{ secrets.WORKFLOW_TOKEN }}
 
         - name: Setup Node
