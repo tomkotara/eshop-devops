@@ -98,14 +98,14 @@ jobs:
           with:
             token:  ${{ secrets.WORKFLOW_TOKEN }}
 
-       - name: Cache node modules
-         uses: actions/cache@v2
-         with:
-          path: |
+        - name: Cache node modules
+          uses: actions/cache@v2
+          with:
+           path: |
             ~/.npm
             ./node_modules
             ./build
-        key: ${{ runner.os }}-build-${{ github.run_id }}
+          key: ${{ runner.os }}-build-${{ github.run_id }}
 
-       - name: Deploy to firebase
+        - name: Deploy to firebase
           run: ./node_modules/.bin/firebase deploy --token=${{ secrets.FIREBASE_TOKEN }}
