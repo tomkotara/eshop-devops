@@ -49,9 +49,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-          ~/.npm
-          ./node_modules
-          ./build
+            ~/.npm
+            ./node_modules
+            ./build
         key: ${{ runner.os }}-build-${{ github.run_id }}
         restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
           
@@ -102,9 +102,9 @@ jobs:
          uses: actions/cache@v2
          with:
           path: |
-          ~/.npm
-          ./node_modules
-          ./build
+            ~/.npm
+            ./node_modules
+            ./build
         key: ${{ runner.os }}-build-${{ github.run_id }}
 
        - name: Deploy to firebase
