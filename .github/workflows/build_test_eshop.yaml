@@ -3,16 +3,16 @@ name: Build and tests our Eshop
 on:
   workflow_dispatch:
 
-jobs: 
+jobs:
   # Install all dependencies
   Install:
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-          token:  ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
@@ -27,24 +27,34 @@ jobs:
           restore-keys: node_modules-
 
       - name: Install with npm
-        run: npm ci
-
-  Build: 
-    needs: Install 
+        run: |
+          npm ci
+  Build:
+    needs: Install
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-            token:  ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 10
-
+          
       - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: build
+        run: |
+          npm rebuild node-sass --force
+          npm run build -- --colors
+      - name: Cache node modules and build folder
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: actions/cache@v2
         with:
@@ -54,58 +64,50 @@ jobs:
             ./build
           key: ${{ runner.os }}-build-${{ github.run_id }}
           restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
-          
-      - name: build
-        run: |
-          npm rebuild node-sass --force
-          npm run build -- --colors
 
-        
+  Test:
+    needs: Install
+    runs-on: ubuntu-latest
 
-  Test: 
-      needs: Install 
-      runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2.4.0
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      steps: 
-        - name: Git Checkout
-          uses: actions/checkout@v2.4.0
-          with:
-              token:  ${{ secrets.WORKFLOW_TOKEN }}
+      - name: Setup Node
+        uses: actions/setup-node@v2.4.1
+        with:
+          node-version: 10
 
-        - name: Setup Node
-          uses: actions/setup-node@v2.4.1
-          with:
-            node-version: 10
-
-        - name: Cache node modules
-          uses: actions/cache@v2
-          with:
-            path: node_modules
-            key: node_modules-${{ hashFiles('**/package-lock.json') }}
-            
-        - name: Run unit tests
-          run: |
-            npm run test -- --colors
-
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Run Unit Tests
+        run: npm run test -- --colors
+    
   Deploy:
-      needs: [Build, Test]
-      runs-on: ubuntu-latest
-      if: ${{ github.ref == 'refs/heads/master' }}
+    needs: [Build, Test]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
 
-      steps: 
-        - name: Git Checkout
-          uses: actions/checkout@v2.4.0
-          with:
-            token:  ${{ secrets.WORKFLOW_TOKEN }}
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2.4.0
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
-        - name: Cache node modules
-          uses: actions/cache@v2
-          with:
-           path: |
+      - name: Load node modules and build folder
+        uses: actions/cache@v2
+        with:
+          path: |
             ~/.npm
             ./node_modules
             ./build
-           key: ${{ runner.os }}-build-${{ github.run_id }}
-
-        - name: Deploy to firebase
-          run: ./node_modules/.bin/firebase deploy --token=${{ secrets.FIREBASE_TOKEN }}
+          key: ${{ runner.os }}-build-${{ github.run_id }}
+      
+      - name: Deploy to firebase
+        run: ./node_modules/.bin/firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
