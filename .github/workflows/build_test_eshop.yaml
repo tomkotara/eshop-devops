@@ -45,10 +45,16 @@ jobs:
           node-version: 10
 
       - name: Cache node modules
+        if: ${{ github.ref == 'refs/heads/master' }}
         uses: actions/cache@v2
         with:
+          path: |
+          ~/.npm
+          ./node_modules
+          ./build
           path: node_modules
-          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-build-${{ github.run_id }}
+        restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
           
       - name: build
         run: |
@@ -81,3 +87,27 @@ jobs:
         - name: Run unit tests
           run: |
             npm run test -- --colors
+
+  Deploy:
+      needs: [Build, Test]
+      runs-on: ubuntu-latest
+      if: ${{ github.ref == 'refs/heads/master' }}
+
+      steps: 
+        - name: Git Checkout
+          uses: actions/checkout@v2.4.0
+          with:
+              token:  ${{ secrets.WORKFLOW_TOKEN }}
+
+       - name: Cache node modules
+         uses: actions/cache@v2
+         with:
+          path: |
+          ~/.npm
+          ./node_modules
+          ./build
+          path: node_modules
+        key: ${{ runner.os }}-build-${{ github.run_id }}
+
+       - name: Deploy to firebase
+          run: ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN
