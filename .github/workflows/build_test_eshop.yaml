@@ -52,7 +52,6 @@ jobs:
           ~/.npm
           ./node_modules
           ./build
-          path: node_modules
         key: ${{ runner.os }}-build-${{ github.run_id }}
         restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
           
@@ -106,7 +105,6 @@ jobs:
           ~/.npm
           ./node_modules
           ./build
-          path: node_modules
         key: ${{ runner.os }}-build-${{ github.run_id }}
 
        - name: Deploy to firebase
