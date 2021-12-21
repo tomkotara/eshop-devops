@@ -113,3 +113,16 @@ jobs:
             ./node_modules
             ./build
           key: ${{ runner.os }}-build-${{ github.run_id }}
+
+      - name: 
+        run: pip3 install ansible
+        run: pip3 install boto
+        run: pip3 install boto3
+        add_ssh_keys:
+         fingerprints:
+          - "70:bd:a9:a9:5c:45:82:c9:00:87:14:a1:a0:53:06:1d"
+        run: echo $SECRET_KEY > test.pem
+        run: chmod 400 test.pem
+        run: echo $PASS_ANSIBLE > pass_ansible.txt
+        run: ansible-playbook ansible/ec2_deploy.yml --user ubuntu --key-file test.pem --vault-pass-file pass_ansible.txt
+        
