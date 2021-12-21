@@ -32,7 +32,7 @@
   connection: ssh
   
   tasks:
-    - name: Install docker
+    - name: Install Docker
       apt:
         name: docker.io
         state: present
@@ -47,7 +47,7 @@
       git:
         repo: 'https://github.com/tomkotara/eshop-devops.git'
         dest: ./app
-    - name: Build docker with eshop
+    - name: Build Docker
       shell: cd app && docker build -t my-eshop:latest .
       become: yes
     - name: Run Docker with eshop
