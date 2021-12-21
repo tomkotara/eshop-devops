@@ -119,8 +119,7 @@ jobs:
         run: pip3 install boto
         run: pip3 install boto3
         add_ssh_keys:
-         fingerprints:
-          - "fe:30:ee:fc:aa:6c:0e:12:b7:89:a7:92:37"
+         fingerprints: "fe:30:ee:fc:aa:6c:0e:12:b7:89:a7:92:37"
         run: echo $SECRET_KEY > test.pem
         run: chmod 400 test.pem
         run: echo $PASS_ANSIBLE > pass_ansible.txt
